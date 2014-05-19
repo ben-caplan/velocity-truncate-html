@@ -1,0 +1,49 @@
+#macro( trucateHTML $html $words $textToAdd )##
+## DEFAULT VARS
+#set( $inputHTML = '' )##
+#set( $html = $html.replaceAll("\s+", ' ') )##
+#if( !$UtilMethods.isSet($words) )##
+#set( $words = 20 )##
+#end##
+##
+## WORD COUNT
+#set( $htmlArray = $html.split("\s") )##
+#foreach($i in [0..$words])##
+#set( $inputHTML = "$inputHTML $!{htmlArray.get($i)}" )##
+#end##
+##
+##CHECK FOR BROKEN TAGS
+#set( $tagArray = [] )##
+#foreach( $char in $inputHTML.split("<") )##
+#if( $UtilMethods.isSet($char) )##
+## FIND TAG
+#set( $endOfElementSpace = $char.indexOf(' ')+1 )##
+#set( $endOfElementCaret = $char.indexOf('>')+1 )##
+#if( $endOfElementSpace < $endOfElementCaret && $endOfElementSpace > 0 )##
+#set( $endOfElement = $endOfElementSpace )##
+#else##
+#set( $endOfElement = $endOfElementCaret )##
+#end##
+##
+## SET TAG AND ADD TO TAG ARRAY
+#if( $char.substring(0,1) == '/' )##
+#set( $tag = $char.substring(0,$endOfElement) )##
+#set( $_dummy = $tagArray.remove( $math.sub($tagArray.size(), 1) ) )##
+#else##
+#set( $tag = $char.substring(0,$endOfElement) )##
+#set( $_dummy = $tagArray.add( $tag ) )##
+#end## $char.substring
+#end## isSet $char
+#end## foreach $char
+##
+## REPAIR BROKEN TAGS
+#set( $fixedHTML = $inputHTML )##
+#if( $UtilMethods.isSet($textToAdd) )##
+#set( $fixedHTML = "${fixedHTML}${textToAdd}" )##
+#end##
+#foreach( $tagNum in [$math.sub($tagArray.size(),1)..0] )##
+#set( $tag = $tagArray.get($tagNum).replaceAll(">| ", '') )##
+#set( $fixedHTML = "${fixedHTML}</${tag}>" )##
+#end##
+$fixedHTML##
+#end## trucateHTML
