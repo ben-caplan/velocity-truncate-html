@@ -26,13 +26,14 @@
 			#end##
 			##
 			## SET TAG AND ADD TO TAG ARRAY
-			#if( $char.substring(0,1) == '/' )##
+			#if( $endOfElement.search("(br|hr|input)") != -1 )##
 				#set( $tag = $char.substring(0,$endOfElement) )##
-				#set( $_dummy = $tagArray.remove( $math.sub($tagArray.size(), 1) ) )##
-			#else##
-				#set( $tag = $char.substring(0,$endOfElement) )##
-				#set( $_dummy = $tagArray.add( $tag ) )##
-			#end## $char.substring
+				#if( $char.substring(0,1) == '/' )##
+					#set( $_dummy = $tagArray.remove( $math.sub($tagArray.size(), 1) ) )##
+				#else##
+					#set( $_dummy = $tagArray.add( $tag ) )##
+				#end## $char.substring
+			#end## search( "(br|hr|input)" )
 		#end## isSet $char
 	#end## foreach $char
 	##
@@ -47,6 +48,3 @@
 	#end##
 	$fixedHTML
 #end## trucateHTML
-
-## EXAMPLE OF USE (uncomment to use)
-##trucateHTML( $html 38 '...' )##
