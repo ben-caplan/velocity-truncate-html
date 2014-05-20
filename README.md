@@ -3,7 +3,7 @@ velocity-truncate-html
 
 Velocity Macro for dotCMS to "smart" truncate a string of HTML at a given number of words across tags without needing to worry about unclosed tags or invalid HTML. Please keep in mind that this macro assumes that you are passing it valid HTML to begin with... Here is how you use it:
     
-    #dotParse('/[PATH TO MACRO/truncate-html.vtl]')##
+    #dotParse('/[PATH TO MACRO]/truncate-html.vtl]')##
     #set( $myHTML = '
     	<h1>HTML Ipsum Presents</h1>
 	     
