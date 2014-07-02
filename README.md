@@ -36,15 +36,15 @@ Velocity Macro for dotCMS to "smart" truncate a string of HTML at a given number
 
 I have included the macro code and set up a variable that contains a string of HTML. Now I call the truncate HTML macro:
 
-    #trucateHTML( $myHTML )##
+    #truncateHTML( $myHTML )##
     
 This simple decleration is all you need to do in order to pull in the first 20 words of the HTML. The macro will do the work closing any clipped tags, so no need to worry. If you want more/fewer words, you can pass a second argument to the macro like so:
 
-    #trucateHTML( $myHTML 50 )##
+    #truncateHTML( $myHTML 50 )##
     
 Now the first 50 words will be pulled in! If you want to add an elipsis or some other text to the end of your text where it was truncated you can pass the macro a third parameter:
 
-    #trucateHTML( $myHTML 50 '...' )##
+    #truncateHTML( $myHTML 50 '...' )##
     
 And there you have it. Happy coding!
 
