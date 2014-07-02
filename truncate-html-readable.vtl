@@ -42,9 +42,14 @@
 	#if( $UtilMethods.isSet($textToAdd) )##
 	#set( $fixedHTML = "${fixedHTML}${textToAdd}" )##
 	#end##
-	#foreach( $tagNum in [$math.sub($tagArray.size(),1)..0] )##
-		#set( $tag = $tagArray.get($tagNum).replaceAll(">| ", '') )##
-		#set( $fixedHTML = "${fixedHTML}</${tag}>" )##
+	#if( $tagArray.size() > 0 )##
+		#foreach( $tagNum in [$math.sub($tagArray.size(),1)..0] )##
+			#set( $tag = $tagArray.get($tagNum).replaceAll(">| ", '') )##
+			#if( $UtilMethods.isSet($contentAtVeryEnd) && $tagNum == 0 )##
+				#set( $fixedHTML = "${fixedHTML}${contentAtVeryEnd}</${tag}>" )##
+			#end##
+			#set( $fixedHTML = "${fixedHTML}</${tag}>" )##
+		#end##
 	#end##
 	$fixedHTML
 #end## trucateHTML
