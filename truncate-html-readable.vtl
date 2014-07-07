@@ -1,50 +1,58 @@
-#macro( trucateHTML $html $words $textToAdd )##
-	## DEFAULT VARS
-    #set( $inputHTML = '' )##
-    #set( $html = $html.replaceAll("\s+", ' ') )##
-	#if( !$UtilMethods.isSet($words) )##
-		#set( $words = 20 )##
-	#end##
-	##
-	## WORD COUNT
-	#set( $htmlArray = $html.split("\s") )##
-    #foreach($i in [0..$words])##
-      #set( $inputHTML = "$inputHTML $!{htmlArray.get($i)}" )##
-    #end##
-    ##
-    ##CHECK FOR BROKEN TAGS
-    #set( $tagArray = [] )##
-	#foreach( $char in $inputHTML.split("<") )##
-		#if( $UtilMethods.isSet($char) )##
-			## FIND TAG
-			#set( $endOfElementSpace = $char.indexOf(' ')+1 )##
-			#set( $endOfElementCaret = $char.indexOf('>')+1 )##
-			#if( $endOfElementSpace < $endOfElementCaret && $endOfElementSpace > 0 )##
-				#set( $endOfElement = $endOfElementSpace )##
-			#else##
-				#set( $endOfElement = $endOfElementCaret )##
-			#end##
-			##
-			## SET TAG AND ADD TO TAG ARRAY
-			#if( $endOfElement.search("(br|hr|input)") != -1 )##
-				#set( $tag = $char.substring(0,$endOfElement) )##
-				#if( $char.substring(0,1) == '/' )##
-					#set( $_dummy = $tagArray.remove( $math.sub($tagArray.size(), 1) ) )##
+#macro( truncateHTML $html $words $textToAdd $contentAtVeryEnd )##
+	#if( $UtilMethods.isSet($html) )##
+		## DEFAULT VARS
+	    #set( $inputHTML = '' )##
+	    #set( $html = $html.replaceAll("\s+", ' ') )##
+		#if( !$UtilMethods.isSet($words) )##
+			#set( $words = 20 )##
+		#end##
+		##
+		## WORD COUNT
+		#set( $htmlArray = $html.split("\s") )##
+	    #foreach($i in [0..$words])##
+	      #set( $inputHTML = "$inputHTML $!{htmlArray.get($i)}" )##
+	    #end##
+	    ##
+	    ##CHECK FOR BROKEN TAGS
+	    #set( $tagArray = [] )##
+		#foreach( $char in $inputHTML.split("<") )##
+			#if( $UtilMethods.isSet($char) )##
+				## FIND TAG
+				#set( $endOfElementSpace = $char.indexOf(' ')+1 )##
+				#set( $endOfElementCaret = $char.indexOf('>')+1 )##
+				#if( $endOfElementSpace < $endOfElementCaret && $endOfElementSpace > 0 )##
+					#set( $endOfElement = $endOfElementSpace )##
 				#else##
-					#set( $_dummy = $tagArray.add( $tag ) )##
-				#end## $char.substring
-			#end## search( "(br|hr|input)" )
-		#end## isSet $char
-	#end## foreach $char
-	##
-	## REPAIR BROKEN TAGS
-	#set( $fixedHTML = $inputHTML )##
-	#if( $UtilMethods.isSet($textToAdd) )##
-	#set( $fixedHTML = "${fixedHTML}${textToAdd}" )##
-	#end##
-	#foreach( $tagNum in [$math.sub($tagArray.size(),1)..0] )##
-		#set( $tag = $tagArray.get($tagNum).replaceAll(">| ", '') )##
-		#set( $fixedHTML = "${fixedHTML}</${tag}>" )##
-	#end##
-	$fixedHTML
-#end## trucateHTML
+					#set( $endOfElement = $endOfElementCaret )##
+				#end##
+				##
+				## SET TAG AND ADD TO TAG ARRAY
+				#set( $tag = $char.substring(0,$endOfElement) )##
+				##$tag | $tag.matches("/?(br|hr|input)>")
+				#if( $tag.matches("/?(br|hr|input)>") == false )##
+					#if( $char.substring(0,1) == '/' )##
+						#set( $_dummy = $tagArray.remove( $math.sub($tagArray.size(), 1) ) )##
+					#else##
+						#set( $_dummy = $tagArray.add( $tag ) )##
+					#end## $char.substring
+				#end## search( "(br|hr|input)" )
+			#end## isSet $char
+		#end## foreach $char
+		##
+		## REPAIR BROKEN TAGS
+		#set( $fixedHTML = $inputHTML )##
+		#if( $UtilMethods.isSet($textToAdd) )##
+		#set( $fixedHTML = "${fixedHTML}${textToAdd}" )##
+		#end##
+		#if( $tagArray.size() > 0 )##
+			#foreach( $tagNum in [$math.sub($tagArray.size(),1)..0] )##
+				#set( $tag = $tagArray.get($tagNum).replaceAll(">| ", '') )##
+				#if( $UtilMethods.isSet($contentAtVeryEnd) && $tagNum == 0 )##
+					#set( $fixedHTML = "${fixedHTML}${contentAtVeryEnd}</${tag}>" )##
+				#end##
+				#set( $fixedHTML = "${fixedHTML}</${tag}>" )##
+			#end##
+		#end##
+		$fixedHTML
+	#end## isset $html
+#end## truncateHTML
