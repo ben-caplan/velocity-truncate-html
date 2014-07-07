@@ -1,4 +1,5 @@
-#macro( trucateHTML $html $words $textToAdd )##
+#macro( truncateHTML $html $words $textToAdd $contentAtVeryEnd )##
+#if( $UtilMethods.isSet($html) )##
 ## DEFAULT VARS
 #set( $inputHTML = '' )##
 #set( $html = $html.replaceAll("\s+", ' ') )##
@@ -26,8 +27,8 @@
 #end##
 ##
 ## SET TAG AND ADD TO TAG ARRAY
-#if( $endOfElement.search("(br|hr|input)") != -1 )##
 #set( $tag = $char.substring(0,$endOfElement) )##
+#if( $tag.matches("/?(br|hr|input)>") == false )##
 #if( $char.substring(0,1) == '/' )##
 #set( $_dummy = $tagArray.remove( $math.sub($tagArray.size(), 1) ) )##
 #else##
@@ -42,9 +43,15 @@
 #if( $UtilMethods.isSet($textToAdd) )##
 #set( $fixedHTML = "${fixedHTML}${textToAdd}" )##
 #end##
+#if( $tagArray.size() > 0 )##
 #foreach( $tagNum in [$math.sub($tagArray.size(),1)..0] )##
 #set( $tag = $tagArray.get($tagNum).replaceAll(">| ", '') )##
+#if( $UtilMethods.isSet($contentAtVeryEnd) && $tagNum == 0 )##
+#set( $fixedHTML = "${fixedHTML}${contentAtVeryEnd}</${tag}>" )##
+#end##
 #set( $fixedHTML = "${fixedHTML}</${tag}>" )##
 #end##
+#end##
 $fixedHTML
-#end## trucateHTML
+#end## isset $html
+#end## truncateHTML
